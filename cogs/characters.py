@@ -1,7 +1,8 @@
-import discord
-from discord.ext import commands
-from discord import app_commands
 import sqlite3
+
+import discord
+from discord import app_commands
+from discord.ext import commands
 
 conn = sqlite3.connect("characters.db")
 c = conn.cursor()
