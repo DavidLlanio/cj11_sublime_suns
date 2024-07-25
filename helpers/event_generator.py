@@ -7,7 +7,7 @@ class EventGenerator:
     This class generates random events
     """
 
-    def __init__(self, data_path):
+    def __init__(self, data_path) -> None:
         """
         The constructor for EventGenerator
 

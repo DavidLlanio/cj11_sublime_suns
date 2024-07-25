@@ -7,7 +7,7 @@ class Generator:
     This class generates buffer items to be queued
     """
 
-    def __init__(self, datapath):
+    def __init__(self, datapath) -> None:
         """
         The constructor for Generator class
 
@@ -18,7 +18,7 @@ class Generator:
         self.item_generator = ItemGenerator(data_path=datapath)
         self.event_generator = EventGenerator(data_path=datapath)
 
-    def generate_buffer_item(self, n_items):
+    def generate_buffer_item(self, n_items: int) -> dict:
         """
         This method generates n_items of events, creates items based
         on winning events, then returns a dict with events and
@@ -29,9 +29,9 @@ class Generator:
         Returns:
             dict: buffer item with events, items, and exp
         """
-        event_buffer = list(str)
-        item_buffer = list(str)
-        exp = 0
+        event_buffer: list[str] = []
+        item_buffer: list[str] = []
+        exp: int = 0
 
         # Generate events
         for _ in range(0, n_items):
