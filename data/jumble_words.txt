@@ -22,7 +22,6 @@ Tiefling
 Halfling
 Gnome
 Underdark
-Faerûn
 Spellbook
 Quest
 Adventure

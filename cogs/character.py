@@ -1,3 +1,5 @@
+import json
+
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -202,6 +204,15 @@ class Characters(commands.Cog):
             await interaction.response.send_message(
                 "You do not have a character created.", ephemeral=True
             )
+
+    @app_commands.command(name="balance", description="Check your balance.")
+    async def balance(self, interaction: discord.Interaction):
+        with open("data/coins.json", "r") as f:
+            coins = json.load(f).get(str(interaction.user.id), 0)
+
+        await interaction.response.send_message(
+            f"Your balance is `{coins}` coins."
+        )
 
 
 async def setup(bot: commands.Bot) -> None:
