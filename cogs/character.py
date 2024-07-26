@@ -4,8 +4,9 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
-from main import CONNECTION, CURSOR
+from helpers.character_database import CharacterDatabase
 
+characters = CharacterDatabase()
 
 class Dropdown(discord.ui.Select):
     def __init__(self, placeholder, options, custom_id):
@@ -44,20 +45,21 @@ class SubmitButton(discord.ui.Button):
         if sex and race and class_:
             user_id = interaction.user.id
 
-            CURSOR.execute(
-                "SELECT * FROM characters WHERE user_id=?", (user_id,)
-            )
-            if CURSOR.fetchone():
+            char_info = characters.get_character_info(user_id)
+            if char_info != -1:
                 await interaction.response.send_message(
                     "You already have a character created.", ephemeral=True
                 )
             else:
-                CURSOR.execute(
-                    "INSERT INTO characters (user_id, sex, race, class) VALUES (?, ?, ?, ?)",
-                    (user_id, sex, race, class_),
-                )
-                CONNECTION.commit()
-                await interaction.response.send_message(
+             characters.add_character(
+                {
+                    "uid": user_id,
+                    "info": {"sex": sex, "class": class_, "race": race},
+                    "inventory": {}
+                }
+            )
+
+             await interaction.response.send_message(
                     "Congratulations! You have created a character!",
                     ephemeral=True,
                     delete_after=10,
@@ -164,8 +166,8 @@ class Characters(commands.Cog):
     async def create(self, interaction: discord.Interaction):
         user_id = interaction.user.id
 
-        CURSOR.execute("SELECT * FROM characters WHERE user_id=?", (user_id,))
-        if CURSOR.fetchone():
+        char_info = characters.get_character_info(user_id)
+        if char_info != -1:
             await interaction.response.send_message(
                 "You already have a character created.", ephemeral=True
             )
@@ -184,14 +186,10 @@ class Characters(commands.Cog):
     async def view(self, interaction: discord.Interaction):
         user_id = interaction.user.id
 
-        CURSOR.execute(
-            "SELECT sex, race, class FROM characters WHERE user_id=?",
-            (user_id,),
-        )
-        character = CURSOR.fetchone()
-
-        if character:
-            sex, race, class_ = character
+        character = characters.get_character_info(user_id)
+        print(character)
+        if character != -1:
+            sex, race, class_ = character["sex"], character["race"], character["class"]
             embed = discord.Embed(
                 title="Your Character",
                 description=f"Sex: {sex}\nRace: {race}\nClass: {class_}",
