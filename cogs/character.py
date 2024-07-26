@@ -8,6 +8,7 @@ from helpers.character_database import CharacterDatabase
 
 characters = CharacterDatabase()
 
+
 class Dropdown(discord.ui.Select):
     def __init__(self, placeholder, options, custom_id):
         super().__init__(
@@ -51,15 +52,15 @@ class SubmitButton(discord.ui.Button):
                     "You already have a character created.", ephemeral=True
                 )
             else:
-             characters.add_character(
-                {
-                    "uid": user_id,
-                    "info": {"sex": sex, "class": class_, "race": race},
-                    "inventory": {}
-                }
-            )
+                characters.add_character(
+                    {
+                        "uid": user_id,
+                        "info": {"sex": sex, "class": class_, "race": race},
+                        "inventory": {},
+                    }
+                )
 
-             await interaction.response.send_message(
+                await interaction.response.send_message(
                     "Congratulations! You have created a character!",
                     ephemeral=True,
                     delete_after=10,
@@ -187,9 +188,13 @@ class Characters(commands.Cog):
         user_id = interaction.user.id
 
         character = characters.get_character_info(user_id)
-        print(character)
+
         if character != -1:
-            sex, race, class_ = character["sex"], character["race"], character["class"]
+            sex, race, class_ = (
+                character["sex"],
+                character["race"],
+                character["class"],
+            )
             embed = discord.Embed(
                 title="Your Character",
                 description=f"Sex: {sex}\nRace: {race}\nClass: {class_}",
