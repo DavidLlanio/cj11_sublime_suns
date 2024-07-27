@@ -1,12 +1,19 @@
-import json
+import os
+from pathlib import Path
 
 import discord
 from discord import app_commands
 from discord.ext import commands
 
+from helpers.character import Character
 from helpers.character_database import CharacterDatabase
 
-characters = CharacterDatabase()
+# Get the data folder path
+repo_path = Path(__file__).parent.parent
+data_fp = os.path.join(repo_path, "data")
+
+# Initialize Database
+character_db = CharacterDatabase(data_path=data_fp)
 
 
 class Dropdown(discord.ui.Select):
@@ -21,54 +28,6 @@ class Dropdown(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.defer()
-
-
-class SubmitButton(discord.ui.Button):
-    def __init__(self):
-        super().__init__(
-            label="Submit", style=discord.ButtonStyle.green, custom_id="submit"
-        )
-
-    async def callback(self, interaction: discord.Interaction):
-        sex = None
-        race = None
-        class_ = None
-
-        for child in self.view.children:  # type: ignore
-            if isinstance(child, Dropdown):
-                if child.custom_id == "sex":
-                    sex = child.values[0] if child.values else None
-                elif child.custom_id == "race":
-                    race = child.values[0] if child.values else None
-                elif child.custom_id == "class":
-                    class_ = child.values[0] if child.values else None
-
-        if sex and race and class_:
-            user_id = interaction.user.id
-
-            char_info = characters.get_character_info(user_id)
-            if char_info != -1:
-                await interaction.response.send_message(
-                    "You already have a character created.", ephemeral=True
-                )
-            else:
-                characters.add_character(
-                    {
-                        "uid": user_id,
-                        "info": {"sex": sex, "class": class_, "race": race},
-                        "inventory": {},
-                    }
-                )
-
-                await interaction.response.send_message(
-                    "Congratulations! You have created a character!",
-                    ephemeral=True,
-                    delete_after=10,
-                )
-        else:
-            await interaction.response.send_message(
-                "Please select all options before submitting.", ephemeral=True
-            )
 
 
 class DropdownView(discord.ui.View):
@@ -156,7 +115,62 @@ class DropdownView(discord.ui.View):
         self.add_item(SubmitButton())
 
 
-class Characters(commands.Cog):
+class SubmitButton(discord.ui.Button):
+    def __init__(self):
+        super().__init__(
+            label="Submit", style=discord.ButtonStyle.green, custom_id="submit"
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        sex = None
+        race = None
+        clss = None
+
+        for child in self.view.children:  # type: ignore
+            if isinstance(child, Dropdown):
+                if child.custom_id == "sex":
+                    sex = child.values[0] if child.values else None
+                elif child.custom_id == "race":
+                    race = child.values[0] if child.values else None
+                elif child.custom_id == "class":
+                    clss = child.values[0] if child.values else None
+
+        if sex and race and clss:
+            user_id = interaction.user.id
+
+            char_info = character_db.get_character_info(user_id)
+            if char_info != -1:
+                await interaction.response.send_message(
+                    "You already have a character created.", ephemeral=True
+                )
+            else:
+                new_character = Character()
+                new_character.name = interaction.user.name
+                new_character.sex = sex
+                new_character.class_ = clss
+                new_character.race = race
+
+                res = character_db.add_character(user_id, new_character)
+
+                if res < 0:
+                    await interaction.response.send_message(
+                        "You already have a character!",
+                        ephemeral=True,
+                        delete_after=10,
+                    )
+                else:
+                    await interaction.response.send_message(
+                        "Congratulations! You have created a character!",
+                        ephemeral=True,
+                        delete_after=10,
+                    )
+        else:
+            await interaction.response.send_message(
+                "Please select all options before submitting.", ephemeral=True
+            )
+
+
+class CharacterHandle(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
@@ -167,7 +181,7 @@ class Characters(commands.Cog):
     async def create(self, interaction: discord.Interaction):
         user_id = interaction.user.id
 
-        char_info = characters.get_character_info(user_id)
+        char_info = character_db.get_character_info(user_id)
         if char_info != -1:
             await interaction.response.send_message(
                 "You already have a character created.", ephemeral=True
@@ -187,13 +201,13 @@ class Characters(commands.Cog):
     async def view(self, interaction: discord.Interaction):
         user_id = interaction.user.id
 
-        character = characters.get_character_info(user_id)
+        character = character_db.get_character_info(user_id)
 
         if character != -1:
             sex, race, class_ = (
-                character["sex"],
-                character["race"],
-                character["class"],
+                character.sex,
+                character.race,
+                character.class_,
             )
             embed = discord.Embed(
                 title="Your Character",
@@ -210,13 +224,13 @@ class Characters(commands.Cog):
 
     @app_commands.command(name="balance", description="Check your balance.")
     async def balance(self, interaction: discord.Interaction):
-        with open("data/coins.json", "r") as f:
-            coins = json.load(f).get(str(interaction.user.id), 0)
+        user_id = interaction.user.id
+        character = character_db.get_character_info(user_id)
 
         await interaction.response.send_message(
-            f"Your balance is `{coins}` coins."
+            f"Your balance is `{character.coins}` coins."
         )
 
 
 async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(Characters(bot))
+    await bot.add_cog(CharacterHandle(bot))
