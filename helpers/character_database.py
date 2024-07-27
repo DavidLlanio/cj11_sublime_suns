@@ -126,6 +126,8 @@ class CharacterDatabase:
 
         buffer_item = self.generator.generate_buffer_item(minutes)
 
+        current_character.last_checkin = now
+
         current_character.buffer.append(buffer_item)
         return current_character
 
