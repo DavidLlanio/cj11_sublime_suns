@@ -63,7 +63,7 @@ class EventGenerator:
             list: List of location descriptions
         """
         with open(
-            os.path.join(self.data_path, "locaiton_front.txt"), "r"
+            os.path.join(self.data_path, "location_front.txt"), "r"
         ) as f:
             location_fronts = f.readlines()
             location_fronts = [x.replace("\n", "") for x in location_fronts]
