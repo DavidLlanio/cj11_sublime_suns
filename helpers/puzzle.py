@@ -1,6 +1,15 @@
 import random
+import json
 
 WORDS: list[str] = []
+ANAGRAMS: list[str] = []
+ANAGRAMS_DATA: dict[str, list[str]] = {}
+
+with open("./data/anagrams_adventure.json") as file:
+    data = json.load(file)
+    ANAGRAMS = list(data.keys())
+    ANAGRAMS_DATA = data
+
 
 with open("./data/jumble_words.txt") as file:
     WORDS = [line.strip() for line in file.readlines()]
