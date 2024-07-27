@@ -1,8 +1,19 @@
+import os
+from pathlib import Path
+
 import discord
 from discord import app_commands
 from discord.ext import commands
 
 from helpers.character import Character
+from helpers.character_database import CharacterDatabase
+
+# Get the data folder path
+repo_path = Path(__file__).parent.parent
+data_fp = os.path.join(repo_path, "data")
+
+# Initialize Database
+character_db = CharacterDatabase(data_path=data_fp)
 
 
 class Dropdown(discord.ui.Select):
@@ -105,11 +116,10 @@ class DropdownView(discord.ui.View):
 
 
 class SubmitButton(discord.ui.Button):
-    def __init__(self, character_db):
+    def __init__(self):
         super().__init__(
             label="Submit", style=discord.ButtonStyle.green, custom_id="submit"
         )
-        self.character_db: Character = character_db
 
     async def callback(self, interaction: discord.Interaction):
         sex = None
@@ -128,7 +138,7 @@ class SubmitButton(discord.ui.Button):
         if sex and race and clss:
             user_id = interaction.user.id
 
-            char_info = self.character_db.get_character_info(user_id)
+            char_info = character_db.get_character_info(user_id)
             if char_info != -1:
                 await interaction.response.send_message(
                     "You already have a character created.", ephemeral=True
@@ -137,7 +147,7 @@ class SubmitButton(discord.ui.Button):
                 new_character = Character(
                     name=interaction.user.tag, sex=sex, class_=clss, race=race
                 )
-                res = self.character_db.add_character(user_id, new_character)
+                res = character_db.add_character(user_id, new_character)
 
                 if res < 0:
                     await interaction.response.send_message(
@@ -158,9 +168,8 @@ class SubmitButton(discord.ui.Button):
 
 
 class CharacterHandle(commands.Cog):
-    def __init__(self, bot: commands.Bot, character_db) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        self.character_db = character_db
 
     @app_commands.command(
         name="create",
@@ -169,7 +178,7 @@ class CharacterHandle(commands.Cog):
     async def create(self, interaction: discord.Interaction):
         user_id = interaction.user.id
 
-        char_info = self.character_db.get_character_info(user_id)
+        char_info = character_db.get_character_info(user_id)
         if char_info != -1:
             await interaction.response.send_message(
                 "You already have a character created.", ephemeral=True
@@ -189,7 +198,7 @@ class CharacterHandle(commands.Cog):
     async def view(self, interaction: discord.Interaction):
         user_id = interaction.user.id
 
-        character = self.character_db.get_character_info(user_id)
+        character = character_db.get_character_info(user_id)
 
         if character != -1:
             sex, race, class_ = (
@@ -213,7 +222,7 @@ class CharacterHandle(commands.Cog):
     @app_commands.command(name="balance", description="Check your balance.")
     async def balance(self, interaction: discord.Interaction):
         user_id = interaction.user.id
-        character = self.character_db.get_character_info(user_id)
+        character = character_db.get_character_info(user_id)
 
         await interaction.response.send_message(
             f"Your balance is `{character.coins}` coins."
