@@ -122,7 +122,7 @@ class CharacterDatabase:
         # Calculate how many minutes since last checkin
         now = datetime.now()
         time_diff = now - current_character.last_checkin
-        minutes = time_diff.total_seconds() // 60
+        minutes = int(time_diff.total_seconds() // 60)
 
         buffer_item = self.generator.generate_buffer_item(minutes)
 
