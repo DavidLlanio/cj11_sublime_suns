@@ -30,6 +30,8 @@ class Item:
             value = 6
         elif self.rarity == "Godly":
             value = 7
+        else:
+            value = 0
         return value
 
 

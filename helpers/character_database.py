@@ -1,8 +1,10 @@
 import os
 import pickle
 from collections import defaultdict
+from datetime import datetime
 
 from helpers.character import Character
+from helpers.generator import Generator
 
 
 class CharacterDatabase:
@@ -19,6 +21,7 @@ class CharacterDatabase:
         """
         self.db_path = os.path.join(data_path, "database.pkl")
         self.characters: defaultdict[int:Character] = self._load_database()
+        self.generator = Generator(data_path)
 
     def add_character(self, uid, character: Character):
         """
@@ -85,10 +88,9 @@ class CharacterDatabase:
         )
         return leaderboard[:20]
 
-    def flush_buffer(self, uid):
+    def character_checkin(self, uid):
         """
-        This method flushes the buffer and adds all the
-        events to quest log and items to character inventory
+        This method fills the character buffer with latest buffer item and flushes it
 
         Parameters:
             uid (int): user id
@@ -100,22 +102,55 @@ class CharacterDatabase:
         else:
             return -1
 
+        current_character = self.fill_buffer(current_character)
+        current_character = self.flush_buffer(current_character)
+
+        # Save the current character in active database
+        self.characters[uid] = current_character
+
+        # Cache the database
+        self.cache_database()
+        return 0
+
+    def fill_buffer(self, current_character):
+        """
+        This method fills the character buffer with buffer items based on last checkin time
+
+        Parameters:
+            current_character (Character): Character of user calling
+        """
+        # Calculate how many minutes since last checkin
+        now = datetime.now()
+        time_diff = now - current_character.last_checkin
+        minutes = int(time_diff.total_seconds() // 60)
+
+        buffer_item = self.generator.generate_buffer_item(minutes)
+
+        current_character.last_checkin = now
+
+        current_character.buffer.append(buffer_item)
+        return current_character
+
+    def flush_buffer(self, current_character):
+        """
+        This method flushes the buffer and adds all the
+        events to quest log and items to character inventory
+
+        Parameters:
+            current_character (Character): Character of user calling
+        """
         for b_item in current_character.buffer:
             # Put items into inventory if any
             current_character.inventory.extend(b_item.items)
             # Add all events to the quest log
-            current_character.quest_log.extend(b_item.events.name)
+            for event in b_item.events:
+                current_character.quest_log.append(event.name)
 
         # Equip best in slot items
         current_character.equip_best()
         current_character.buffer = []
 
-        # Save the changes
-        self.characters[uid] = current_character
-
-        # Cache database just in case
-        self.cache_database()
-        return 0
+        return current_character
 
     def cache_database(self):
         """

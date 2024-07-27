@@ -214,9 +214,7 @@ class CharacterHandle(commands.Cog):
                 description=f"Sex: {sex}\nRace: {race}\nClass: {class_}",
                 color=0x00FF00,
             )
-            await interaction.response.send_message(
-                embed=embed, ephemeral=True
-            )
+            await interaction.response.send_message(embed=embed)
         else:
             await interaction.response.send_message(
                 "You do not have a character created.", ephemeral=True
@@ -230,6 +228,22 @@ class CharacterHandle(commands.Cog):
         await interaction.response.send_message(
             f"Your balance is `{character.coins}` coins."
         )
+
+    @app_commands.command(
+        name="checkin", description="Get everything your character has gained"
+    )
+    async def checkin(self, interaction: discord.Interaction):
+        user_id = interaction.user.id
+        check = character_db.character_checkin(user_id)
+
+        if check < 0:
+            await interaction.response.send_message(
+                "You do not have a character created.", ephemeral=True
+            )
+        else:
+            await interaction.response.send_message(
+                "You have checked in your character, use /view to see changes"
+            )
 
 
 async def setup(bot: commands.Bot) -> None:
