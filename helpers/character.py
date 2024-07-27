@@ -1,3 +1,4 @@
+from datetime import datetime
 from .generator import BufferItem
 from .item_generator import Item
 
@@ -20,6 +21,7 @@ class Character:
         self.buffer: list[BufferItem] = []
         self.quest_log: list[str] = []
         self.ranking_points: int = 0
+        self.last_checkin = datetime.now()
 
     def equip_best(self):
         for item in self.inventory:
