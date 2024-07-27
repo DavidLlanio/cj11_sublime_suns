@@ -1,27 +1,25 @@
-from dataclasses import dataclass
-
-from generator import BufferItem
-from item_generator import Item
+from .generator import BufferItem
+from .item_generator import Item
 
 
-@dataclass
 class Character:
     """Class for keeping track of character information"""
 
-    name: str = ""
-    sex: str = ""
-    race: str = ""
-    class_: str = ""
-    coins: int = 0
-    equipped_helmet: Item = None
-    equipped_armor: Item = None
-    equipped_boots: Item = None
-    equipped_necklace: Item = None
-    equipped_weapon: Item = None
-    inventory: list[Item] = []
-    buffer: list[BufferItem] = []
-    quest_log: list[str] = []
-    ranking_points: int = 0
+    def __init__(self):
+        self.name: str = ""
+        self.sex: str = ""
+        self.race: str = ""
+        self.class_: str = ""
+        self.coins: int = 0
+        self.equipped_helmet: Item = None
+        self.equipped_armor: Item = None
+        self.equipped_boots: Item = None
+        self.equipped_necklace: Item = None
+        self.equipped_weapon: Item = None
+        self.inventory: list[Item] = []
+        self.buffer: list[BufferItem] = []
+        self.quest_log: list[str] = []
+        self.ranking_points: int = 0
 
     def equip_best(self):
         for item in self.inventory:
