@@ -6,10 +6,121 @@ import random
 import discord
 from discord import app_commands
 from discord.ext import commands
+import asyncio
 
-from helpers.puzzle import ANAGRAMS, ANAGRAMS_DATA, jumble
+from helpers.puzzle import ANAGRAMS, ANAGRAMS_DATA, jumble, MIND_MELD
 
 COLOR = 0x00FF00
+
+
+class MindMeldButton(discord.ui.Button["MindMeld"]):
+    def __init__(self, x: int, y: int, label: str, disabled: bool) -> None:
+        super().__init__(
+            style=discord.ButtonStyle.secondary,
+            label=label if disabled else "\u200b",
+            disabled=disabled,
+            row=y,
+        )
+        self.x = x
+        self.y = y
+        if self.view is not None:
+            self.winning_words = self.view.get_winning_words()
+
+    async def callback(self, interaction: discord.Interaction) -> None:
+        assert self.view is not None
+        view: MindMeld = self.view
+        selected_btn_value = view.board[self.y][self.x]
+
+        result = view.check_btn_values(selected_btn_value)
+        if result == "next":
+            self.style = discord.ButtonStyle.success
+            self.label = selected_btn_value
+            self.disabled = True
+            content = (
+                f"Correct! Keep going!\nFind `{' '.join(view.winning_words)}`"
+            )
+
+        elif result == "next_level":
+            for child in view.children:
+                child.style = discord.ButtonStyle.secondary
+                child.label = "\u200b"
+                child.disabled = False
+            content = f"Correct! You have reached level `{view.game_level}`!\nFind `{' '.join(view.winning_words)}`"
+
+        elif result == "win":
+            content = "You win!"
+            self.style = discord.ButtonStyle.success
+            for child in view.children:
+                child.disabled = True
+            view.stop()
+        else:
+            content = "Incorrect! Try again!"
+            self.style = discord.ButtonStyle.danger
+            self.label = selected_btn_value
+            for child in view.children:
+                child.disabled = True
+
+        embed = discord.Embed(
+            title="Mind Meld!", description=content, color=COLOR
+        )
+
+        await interaction.response.edit_message(view=view, embed=embed)
+
+
+class MindMeld(discord.ui.View):
+    children: list[MindMeldButton]
+    words: list[str]
+
+    def __init__(
+        self,
+        level: int,
+        disabled: bool,
+        words: list[str],
+        winning_words: list[str],
+    ) -> None:
+        super().__init__()
+        self.level = level
+        self.disabled = disabled
+        self.words = words
+        self.winning_words = winning_words
+
+        temp = copy.deepcopy(self.words)
+        self.board = [
+            [temp.pop(0) for _ in range(level)] for _ in range(level)
+        ]
+
+        self.game_level = 1
+
+        for i in range(level):
+            for j in range(level):
+                self.add_item(
+                    MindMeldButton(i, j, self.board[j][i], self.disabled)
+                )
+
+    def check_btn_values(self, selected_btn_value: str) -> str:
+        if selected_btn_value == self.winning_words[0]:
+            self.winning_words.pop(0)
+
+            if self.winning_words == []:
+                self.game_level += 1
+
+                temp = copy.deepcopy(self.words)
+                for _ in range(self.game_level):
+                    random_word = random.choice(temp)
+                    self.winning_words.append(random_word)
+                    temp.remove(random_word)
+
+                if self.game_level == len(self.words):
+                    return "win"
+
+                return "next_level"
+
+            return "next"
+
+        return "stop"
+
+    def get_winning_words(self) -> list[str] | None:
+        return self.winning_words
 
 
 class Puzzle(commands.Cog):
@@ -135,6 +246,67 @@ class Puzzle(commands.Cog):
         )
 
         await interaction.followup.send(embed=embed)
+
+    @app_commands.command(
+        name="mind_meld",
+        description="Connect your mind and match your memories in this ultimate brain battle!",
+    )
+    @app_commands.describe(
+        level="Select a level", start_time="Select a start time"
+    )
+    @app_commands.choices(
+        level=[
+            app_commands.Choice(name="1", value=3),
+            app_commands.Choice(name="2", value=4),
+            app_commands.Choice(name="3", value=5),
+        ]
+    )
+    @app_commands.choices(
+        start_time=[
+            app_commands.Choice(name="30 seconds", value=30),
+            app_commands.Choice(name="45 seconds", value=45),
+            app_commands.Choice(name="60 seconds", value=60),
+        ]
+    )
+    async def mind_meld(
+        self, interaction: discord.Interaction, level: int, start_time: int
+    ) -> None:
+        level = 3
+        temp = copy.deepcopy(MIND_MELD)
+        words = [
+            temp.pop(random.randint(0, len(temp) - 1)) for _ in range(level**2)
+        ]
+        winning_words = [random.choice(words)]
+
+        view = MindMeld(
+            level=level,
+            disabled=True,
+            words=words,
+            winning_words=winning_words,
+        )
+        embed = discord.Embed(
+            title="Mind Meld!",
+            description=f"Find `{' '.join(winning_words)}`, Hurry up! You have `{start_time}` seconds remember the positions!",
+            color=COLOR,
+        )
+        await interaction.response.send_message(
+            view=view, delete_after=start_time, embed=embed, ephemeral=True
+        )
+
+        await asyncio.sleep(start_time)
+        view = MindMeld(
+            level=level,
+            disabled=False,
+            words=words,
+            winning_words=winning_words,
+        )
+
+        embed = discord.Embed(
+            title="Mind Meld!",
+            description=f"Game started! Click the buttons to match the words!\n You need find `{' '.join(winning_words)}`",
+            color=COLOR,
+        )
+        await interaction.followup.send(view=view, embed=embed, ephemeral=True)
 
 
 async def setup(bot: commands.Bot) -> None:
