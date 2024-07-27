@@ -20,7 +20,7 @@ class Generator:
         The constructor for Generator class
 
         Parameters:
-            data_path (os.Path): Path to data folder
+            data_path (str): Path to data folder
         """
         # Composed of two other generators
         self.item_generator = ItemGenerator(data_path=datapath)
