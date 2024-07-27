@@ -1,13 +1,11 @@
-from dataclasses import dataclass
-
-from event_generator import Event, EventGenerator
-from item_generator import Item, ItemGenerator
+from .event_generator import Event, EventGenerator
+from .item_generator import Item, ItemGenerator
 
 
-@dataclass
 class BufferItem:
-    events: list[Event] = []
-    items: list[Item] = []
+    def __init__(self):
+        self.events: list[Event] = []
+        self.items: list[Item] = []
 
 
 class Generator:
