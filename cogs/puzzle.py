@@ -290,7 +290,7 @@ class Puzzle(commands.Cog):
             color=COLOR,
         )
         await interaction.response.send_message(
-            view=view, delete_after=start_time, embed=embed, ephemeral=True
+            view=view, delete_after=start_time, embed=embed
         )
 
         await asyncio.sleep(start_time)
@@ -306,7 +306,7 @@ class Puzzle(commands.Cog):
             description=f"Game started! Click the buttons to match the words!\n You need find `{' '.join(winning_words)}`",
             color=COLOR,
         )
-        await interaction.followup.send(view=view, embed=embed, ephemeral=True)
+        await interaction.followup.send(view=view, embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
