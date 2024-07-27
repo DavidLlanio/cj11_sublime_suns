@@ -271,7 +271,6 @@ class Puzzle(commands.Cog):
     async def mind_meld(
         self, interaction: discord.Interaction, level: int, start_time: int
     ) -> None:
-        level = 3
         temp = copy.deepcopy(MIND_MELD)
         words = [
             temp.pop(random.randint(0, len(temp) - 1)) for _ in range(level**2)
