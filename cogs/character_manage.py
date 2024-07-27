@@ -245,6 +245,22 @@ class CharacterHandle(commands.Cog):
                 "You have checked in your character, use /view to see changes"
             )
 
+    @app_commands.command(
+        name="leaderboard", description="Show ranking points leaderboard"
+    )
+    async def leaderboard(self, interaction: discord.Interaction):
+        top20 = character_db.get_character_leaderboard()
+        top20 = [
+            f"{place}. {character.name}"
+            for place, character in enumerate(top20)
+        ]
+        if top20:
+            await interaction.response.send_message(f"\n".join(top20))
+        else:
+            await interaction.response.send_message(
+                "You have checked in your character, use /view to see changes"
+            )
+
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(CharacterHandle(bot))
