@@ -1,5 +1,5 @@
 import os
-from random import choice
+from random import choice, choices
 
 
 class ItemGenerator:
@@ -18,6 +18,33 @@ class ItemGenerator:
         self.data_path = data_path
         self.weapon_fronts = self._get_weapon_front_list()
         self.weapon_names = self._get_weapon_names()
+        self.weapon_rarities = ["Common", "Uncommon", "Rare",\
+                                 "Epic", "Legendary", "Mythical", "Godly"]
+        self.weapon_mult = {
+            "Common": {
+                "mult": 1,
+            },
+            "Uncommon": {
+                "mult": 1,
+            },
+            "Rare": {
+                "mult": 1,
+            },
+            "Epic": {
+                "mult": 1,
+            },
+            "Legendary": {
+                "mult": 1,
+            },
+            "Mythical": {
+                "mult": 1,
+            },
+            "Godly": {
+                "mult": 1,
+            },
+        }
+        self.weapon_rates = [0.559484, 0.25, 0.125, 0.0625, 0.003, 0.000015, 0.000001]
+
 
     def get_item(self):
         """
