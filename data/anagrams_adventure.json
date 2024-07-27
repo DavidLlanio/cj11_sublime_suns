@@ -1,31 +1,8 @@
 {
-    "ropc": [
-        "crop",
-        "cop",
-        "cor",
-        "orc",
-        "pro",
-        "roc"
-    ],
-    "tsan": [
-        "ants",
-        "tans",
-        "ant",
-        "san",
-        "sat",
-        "tan",
-        "tas"
-    ],
-    "eglo": [
-        "loge",
-        "ogle",
-        "ego",
-        "gel",
-        "leg",
-        "log",
-        "ole"
-    ],
-    "part": [
+    "orpc": ["crop", "cop", "cor", "orc", "pro", "roc"],
+    "tsan": ["ants", "tans", "ant", "san", "sat", "tan", "tas"],
+    "eglo": ["loge", "ogle", "ego", "gel", "leg", "log", "ole"],
+    "rpta": [
         "part",
         "prat",
         "rapt",
@@ -40,16 +17,7 @@
         "tap",
         "tar"
     ],
-    "gram": [
-        "gram",
-        "arm",
-        "gam",
-        "gar",
-        "mag",
-        "mar",
-        "rag",
-        "ram"
-    ],
+    "amgr": ["gram", "arm", "gam", "gar", "mag", "mar", "rag", "ram"],
     "olapo": [
         "loop",
         "opal",
@@ -65,7 +33,7 @@
         "poo",
         "loo"
     ],
-    "beast": [
+    "sebat": [
         "abets",
         "baste",
         "bates",
@@ -114,7 +82,7 @@
         "tea",
         "tes"
     ],
-    "clast": [
+    "ltcas": [
         "clast",
         "talcs",
         "acts",
@@ -142,7 +110,7 @@
         "sat",
         "tas"
     ],
-    "grove": [
+    "ogver": [
         "grove",
         "ergo",
         "goer",
@@ -162,7 +130,7 @@
         "voe",
         "vog"
     ],
-    "plume": [
+    "mlpue": [
         "plume",
         "lump",
         "mule",
@@ -176,7 +144,7 @@
         "pul",
         "ump"
     ],
-    "twine": [
+    "itnew": [
         "twine",
         "newt",
         "nite",
@@ -198,17 +166,8 @@
         "win",
         "wit"
     ],
-    "hatch": [
-        "hatch",
-        "chat",
-        "hath",
-        "tach",
-        "act",
-        "cat",
-        "hah",
-        "hat"
-    ],
-    "power": [
+    "hhtca": ["hatch", "chat", "hath", "tach", "act", "cat", "hah", "hat"],
+    "wpore": [
         "power",
         "pore",
         "prow",
@@ -227,7 +186,7 @@
         "row",
         "woe"
     ],
-    "cloven": [
+    "vcoenl": [
         "cloven",
         "clone",
         "clove",
@@ -256,7 +215,7 @@
         "one",
         "voe"
     ],
-    "plower": [
+    "eplwro": [
         "plower",
         "replow",
         "loper",
@@ -297,7 +256,7 @@
         "row",
         "woe"
     ],
-    "trance": [
+    "ctaner": [
         "canter",
         "carnet",
         "centra",
@@ -372,7 +331,7 @@
         "tec",
         "ten"
     ],
-    "pencil": [
+    "ipecln": [
         "pencil",
         "spinel",
         "spline",
@@ -437,7 +396,7 @@
         "sin",
         "sip"
     ],
-    "spline": [
+    "ipnles": [
         "pencil",
         "spinel",
         "spline",
@@ -502,7 +461,7 @@
         "sin",
         "sip"
     ],
-    "glisten": [
+    "ielstgn": [
         "glisten",
         "singlet",
         "sniglet",
@@ -656,7 +615,7 @@
         "tin",
         "tis"
     ],
-    "alchemy": [
+    "mhalcye": [
         "alchemy",
         "leachy",
         "almeh",
@@ -742,7 +701,7 @@
         "yea",
         "yeh"
     ],
-    "twinkle": [
+    "ktnwlie": [
         "twinkle",
         "tinkle",
         "welkin",
@@ -786,7 +745,7 @@
         "wink",
         "wite"
     ],
-    "scramble": [
+    "bsacmler": [
         "clambers",
         "scramble",
         "amblers",
@@ -1068,7 +1027,7 @@
         "sel",
         "ser"
     ],
-    "spellcraft": [
+    "fspelcrlat": [
         "spellcraft",
         "sceptral",
         "spectral",
@@ -1479,7 +1438,7 @@
         "tel",
         "tes"
     ],
-    "sorcerers": [
+    "csorrrsee": [
         "sorcerers",
         "rescores",
         "sorcerer",
@@ -1566,7 +1525,7 @@
         "soc",
         "sos"
     ],
-    "dragonborn": [
+    "drragoobnn": [
         "dragonborn",
         "bargoon",
         "bradoon",
