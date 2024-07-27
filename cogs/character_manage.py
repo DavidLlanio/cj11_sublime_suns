@@ -144,9 +144,12 @@ class SubmitButton(discord.ui.Button):
                     "You already have a character created.", ephemeral=True
                 )
             else:
-                new_character = Character(
-                    name=interaction.user.tag, sex=sex, class_=clss, race=race
-                )
+                new_character = Character()
+                new_character.name = interaction.user.name
+                new_character.sex = sex
+                new_character.class_ = clss
+                new_character.race = race
+
                 res = character_db.add_character(user_id, new_character)
 
                 if res < 0:
