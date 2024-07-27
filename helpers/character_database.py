@@ -128,5 +128,10 @@ class CharacterDatabase:
         """
         This method loads the database from the file
         """
-        with open(self.db_path, "wb") as db:
-            self.characters = pickle.load(db)
+        if os.path.exists(self.db_path):
+            with open(self.db_path, "rb") as db:
+                database = pickle.load(db)
+        else:
+            database = {}
+
+        return database
