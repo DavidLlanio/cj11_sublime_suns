@@ -1,5 +1,17 @@
 import os
+from dataclasses import dataclass
 from random import choice, choices
+
+
+@dataclass
+class Event:
+    """Class for keeping track of event information"""
+
+    name: str = ""
+    coins: bool = False
+
+    def __str__(self) -> str:
+        return f"{self.name}"
 
 
 class EventGenerator:
@@ -15,6 +27,7 @@ class EventGenerator:
             data_path (os.Path): Path to data folder
         """
         self.data_path = data_path
+        self.event = Event()
         self.location_front = self._get_location_front_list()
         self.generic_names = self._get_generic_names()
         self.city_names = self._get_city_names()
@@ -28,20 +41,19 @@ class EventGenerator:
 
         Returns:
             str event: Event name
-            bool points: True if winning event, False if not winning event
+            bool coins: True if winning event, False if not winning event
         """
         event_type = ["visiting", "winning"]
         event_odds = [0.7, 0.3]
         event_type = choices(event_type, event_odds)
 
-        if event_type == "visiting":
-            event = f"{choice(self.visiting_verbs)} the city of {choice(self.city_names)}"
-            points = False
-        elif event_type == "winning":
-            event = f"{choice(self.winning_verbs)}{choice(self.location_front)}{choice(self.generic_names)}"
-            points = True
+        if event_type[0] == "visiting":
+            self.event.name = f"{choice(self.visiting_verbs)} the city of {choice(self.city_names)}"
+        elif event_type[0] == "winning":
+            self.event.name = f"{choice(self.winning_verbs)}{choice(self.location_front)}{choice(self.generic_names)}"
+            self.event.coins = True
 
-        return event, points
+        return self.event
 
     def _get_location_front_list(self):
         """
