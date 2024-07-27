@@ -1,18 +1,19 @@
 import os
-from pathlib import Path
-from random import choice, choices
 from dataclasses import dataclass
+from random import choice, choices
 
 
 @dataclass
 class Item:
     """Class for keeping track of item information"""
+
     name: str = ""
     type_: str = ""
     rarity: str = ""
 
     def __str__(self) -> str:
         return f"{self.name}\n{self.type_}\n{self.rarity}"
+
 
 class ItemGenerator:
     """
@@ -27,9 +28,9 @@ class ItemGenerator:
         Parameters:
             data_path (os.Path): Path to data folder
         """
-        # Item dataclass 
+        # Item dataclass
         self.item = Item()
-        
+
         # Get all lists
         self.data_path = data_path
         self.weapon_fronts = self._get_weapon_front_list()
@@ -38,13 +39,27 @@ class ItemGenerator:
         self.helmet_fronts = self._get_helmet_front_list()
         self.necklace_fronts = self._get_necklace_front_list()
         self.item_names = self._get_item_names()
-        
-        # Pools and odds
-        self.item_rarities = ["Common", "Uncommon", "Rare",\
-                                 "Epic", "Legendary", "Mythical", "Godly"]
-        self.item_rarity_rates = [0.559484, 0.25, 0.125, 0.0625, 0.003, 0.000015, 0.000001]
-        self.item_types = ["Weapon", "Helmet", "Armor", "Boots", "Necklace"]
 
+        # Pools and odds
+        self.item_rarities = [
+            "Common",
+            "Uncommon",
+            "Rare",
+            "Epic",
+            "Legendary",
+            "Mythical",
+            "Godly",
+        ]
+        self.item_rarity_rates = [
+            0.559484,
+            0.25,
+            0.125,
+            0.0625,
+            0.003,
+            0.000015,
+            0.000001,
+        ]
+        self.item_types = ["Weapon", "Helmet", "Armor", "Boots", "Necklace"]
 
     def get_item(self):
         """
@@ -72,15 +87,21 @@ class ItemGenerator:
             str: Item name
         """
         if item_t == "Weapon":
-            item_name = f"{choice(self.weapon_fronts)}{choice(self.item_names)}"
+            item_name = (
+                f"{choice(self.weapon_fronts)}{choice(self.item_names)}"
+            )
         elif item_t == "Helmet":
-            item_name = f"{choice(self.helmet_fronts)}{choice(self.item_names)}"
+            item_name = (
+                f"{choice(self.helmet_fronts)}{choice(self.item_names)}"
+            )
         elif item_t == "Armor":
             item_name = f"{choice(self.armor_fronts)}{choice(self.item_names)}"
         elif item_t == "Boots":
             item_name = f"{choice(self.boots_fronts)}{choice(self.item_names)}"
         elif item_t == "Necklace":
-            item_name = f"{choice(self.necklace_fronts)}{choice(self.item_names)}"
+            item_name = (
+                f"{choice(self.necklace_fronts)}{choice(self.item_names)}"
+            )
 
         return item_name
 
@@ -93,7 +114,7 @@ class ItemGenerator:
         """
         item_rarity = choices(self.item_rarities, self.item_rarity_rates)
         return item_rarity[0]
-    
+
     def get_item_type(self):
         """
         This method returns a random item type
@@ -103,7 +124,7 @@ class ItemGenerator:
         """
         item_type = choice(self.item_types)
         return item_type
-    
+
     def _get_weapon_front_list(self):
         """
         This method returns a list of weapons descriptions that go before the name
@@ -116,7 +137,7 @@ class ItemGenerator:
             weapon_fronts = [x.replace("\n", "") for x in weapon_fronts]
 
         return weapon_fronts
-    
+
     def _get_helmet_front_list(self):
         """
         This method returns a list of helmet descriptions that go before the name
@@ -129,7 +150,7 @@ class ItemGenerator:
             helmet_fronts = [x.replace("\n", "") for x in helmet_fronts]
 
         return helmet_fronts
-    
+
     def _get_armor_front_list(self):
         """
         This method returns a list of armor descriptions that go before the name
@@ -142,7 +163,7 @@ class ItemGenerator:
             armor_fronts = [x.replace("\n", "") for x in armor_fronts]
 
         return armor_fronts
-    
+
     def _get_boots_front_list(self):
         """
         This method returns a list of boots descriptions that go before the name
@@ -155,7 +176,7 @@ class ItemGenerator:
             boots_fronts = [x.replace("\n", "") for x in boots_fronts]
 
         return boots_fronts
-    
+
     def _get_necklace_front_list(self):
         """
         This method returns a list of necklace descriptions that go before the name
@@ -163,7 +184,9 @@ class ItemGenerator:
         Returns:
             list: List of necklace descriptions
         """
-        with open(os.path.join(self.data_path, "necklace_front.txt"), "r") as nf:
+        with open(
+            os.path.join(self.data_path, "necklace_front.txt"), "r"
+        ) as nf:
             necklace_fronts = nf.readlines()
             necklace_fronts = [x.replace("\n", "") for x in necklace_fronts]
 
