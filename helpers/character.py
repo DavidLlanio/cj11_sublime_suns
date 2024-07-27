@@ -20,3 +20,4 @@ class Character:
     inventory: list[Item] = []
     buffer: list[BufferItem] = []
     quest_log: list[str] = []
+    ranking_points: int = 0
