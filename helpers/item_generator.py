@@ -14,6 +14,24 @@ class Item:
     def __str__(self) -> str:
         return f"{self.name}\n{self.type_}\n{self.rarity}"
 
+    def enumerate_rarity(self):
+        value = 0
+        if self.rarity == "Common":
+            value = 1
+        elif self.rarity == "Uncommon":
+            value = 2
+        elif self.rarity == "Rare":
+            value = 3
+        elif self.rarity == "Epic":
+            value = 4
+        elif self.rarity == "Legendary":
+            value = 5
+        elif self.rarity == "Mythical":
+            value = 6
+        elif self.rarity == "Godly":
+            value = 7
+        return value
+
 
 class ItemGenerator:
     """
