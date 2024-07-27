@@ -32,10 +32,11 @@ class CharacterDatabase:
             int: Returns 0 if uid already has a character
         """
         if uid in self.characters.keys():
-            return 0
+            return -1
         else:
             self.characters[uid] = character
             self.cache_database()
+            return 0
 
     def get_character_info(self, uid):
         """
@@ -66,6 +67,7 @@ class CharacterDatabase:
         """
         if uid in self.characters.keys():
             self.characters[uid].buffer.append(buffer_item)
+            return 0
         else:
             return -1
 
@@ -113,6 +115,7 @@ class CharacterDatabase:
 
         # Cache database just in case
         self.cache_database()
+        return 0
 
     def cache_database(self):
         """
