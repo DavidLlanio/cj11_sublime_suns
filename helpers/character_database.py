@@ -143,7 +143,8 @@ class CharacterDatabase:
             # Put items into inventory if any
             current_character.inventory.extend(b_item.items)
             # Add all events to the quest log
-            current_character.quest_log.extend(b_item.events.name)
+            for event in b_item.events:
+                current_character.quest_log.append(event.name)
 
         # Equip best in slot items
         current_character.equip_best()
