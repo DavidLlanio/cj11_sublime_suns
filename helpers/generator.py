@@ -1,5 +1,11 @@
-from event_generator import EventGenerator
-from item_generator import ItemGenerator
+from .event_generator import Event, EventGenerator
+from .item_generator import Item, ItemGenerator
+
+
+class BufferItem:
+    def __init__(self):
+        self.events: list[Event] = []
+        self.items: list[Item] = []
 
 
 class Generator:
@@ -12,13 +18,16 @@ class Generator:
         The constructor for Generator class
 
         Parameters:
-            data_path (os.Path): Path to data folder
+            data_path (str): Path to data folder
         """
         # Composed of two other generators
         self.item_generator = ItemGenerator(data_path=datapath)
         self.event_generator = EventGenerator(data_path=datapath)
 
-    def generate_buffer_item(self, n_items: int) -> dict:
+        # Crete buffer item
+        self.buffer_item = BufferItem()
+
+    def generate_buffer_item(self, n_items: int) -> BufferItem:
         """
         This method generates n_items of events, creates items based
         on winning events, then returns a dict with events and
@@ -27,32 +36,38 @@ class Generator:
         Parameters:
             n_items (int): Number of events to generate
         Returns:
-            dict: buffer item with events, items, and exp
+            BufferItem: buffer item with events and items
         """
-        event_buffer: list[str] = []
-        item_buffer: list[str] = []
-        exp: int = 0
+        win_count: int = 0
 
         # Generate events
-        for _ in range(0, n_items):
-            event, points = self.event_generator.get_event()
+        for _ in range(n_items):
+            event = self.event_generator.get_event()
 
-            if points:
-                exp += 1
+            if event.coins:
+                win_count += 1
 
-            event_buffer.append(event)
+            self.buffer_item.events.append(event)
 
         # For each winning event generate an item
-        for _ in range(0, exp):
+        for _ in range(win_count):
             item = self.item_generator.get_item()
 
-            item_buffer.append(item)
+            self.buffer_item.items.append(item)
 
-        # Create dict representing buffer item
-        buffer_item = {
-            "events": event_buffer,
-            "items": item_buffer,
-            "exp": exp,
-        }
+        return self.buffer_item
 
-        return buffer_item
+    def generate_items(self, n_tems: int) -> list[Item]:
+        """
+        This method returns a list of n random Items
+
+        Returns:
+            list[Item]: List of Items
+        """
+        items: list[Item] = []
+
+        for _ in range(n_tems):
+            new_item = self.item_generator.get_item()
+            items.append(new_item)
+
+        return items
