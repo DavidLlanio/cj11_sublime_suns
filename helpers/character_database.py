@@ -35,6 +35,7 @@ class CharacterDatabase:
             return 0
         else:
             self.characters[uid] = character
+            self.cache_database()
 
     def get_character_info(self, uid):
         """
