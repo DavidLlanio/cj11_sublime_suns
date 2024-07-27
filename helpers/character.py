@@ -12,11 +12,11 @@ class Character:
         self.race: str = ""
         self.class_: str = ""
         self.coins: int = 0
-        self.equipped_helmet: Item = None
-        self.equipped_armor: Item = None
-        self.equipped_boots: Item = None
-        self.equipped_necklace: Item = None
-        self.equipped_weapon: Item = None
+        self.equipped_helmet: Item = Item()
+        self.equipped_armor: Item = Item()
+        self.equipped_boots: Item = Item()
+        self.equipped_necklace: Item = Item()
+        self.equipped_weapon: Item = Item()
         self.inventory: list[Item] = []
         self.buffer: list[BufferItem] = []
         self.quest_log: list[str] = []
