@@ -156,7 +156,7 @@ class DropdownView(discord.ui.View):
         self.add_item(SubmitButton())
 
 
-class Characters(commands.Cog):
+class CharacterHandle(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
@@ -219,4 +219,4 @@ class Characters(commands.Cog):
 
 
 async def setup(bot: commands.Bot) -> None:
-    await bot.add_cog(Characters(bot))
+    await bot.add_cog(CharacterHandle(bot))
