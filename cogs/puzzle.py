@@ -1,13 +1,13 @@
-import json
-import random
 import copy
 import datetime
+import json
+import random
 
 import discord
 from discord import app_commands
 from discord.ext import commands
 
-from helpers.puzzle import jumble, ANAGRAMS, ANAGRAMS_DATA
+from helpers.puzzle import ANAGRAMS, ANAGRAMS_DATA, jumble
 
 COLOR = 0x00FF00
 

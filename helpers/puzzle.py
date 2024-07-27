@@ -1,5 +1,5 @@
-import random
 import json
+import random
 
 WORDS: list[str] = []
 ANAGRAMS: list[str] = []
