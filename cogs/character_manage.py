@@ -213,14 +213,10 @@ class CharacterHandle(commands.Cog):
             )
             embed = discord.Embed(
                 title="Character Info",
-                description=f"Quest Log:\n{formatted_quest_log}\n\n \
-                    Sex: {sex}\nRace: {race}\nClass: {class_}\n\n \
-                    Equipment:\n{formatted_equipment_list}",
+                description=f"**Quest Log:**\n{formatted_quest_log}\n\n**Sex:** {sex}\n**Race:** {race}\n**Class:** {class_}\n\n**Equipment:**\n{formatted_equipment_list}",
                 color=0x00FF00,
             )
-            await interaction.response.send_message(
-                embed=embed, delete_after=60
-            )
+            await interaction.response.send_message(embed=embed)
         else:
             await interaction.response.send_message(
                 "You do not have a character created.", ephemeral=True
@@ -239,9 +235,10 @@ class CharacterHandle(commands.Cog):
         name="checkin",
         description="Log all activities since last checkin and claim items earned",
     )
-    async def checkin(self, interaction: discord.Interaction):
-        user_id = interaction.user.id
-        check = character_db.character_checkin(user_id)
+    async def checkin(self, interaction: discord.Interaction) -> None:
+        """Slash command to check in your character."""
+        user_id: int = interaction.user.id
+        check: int = character_db.character_checkin(user_id)
 
         if check < 0:
             await interaction.response.send_message(
