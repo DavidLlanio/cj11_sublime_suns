@@ -54,6 +54,7 @@ class MindMeldButton(discord.ui.Button["MindMeld"]):
 
         elif result == "win":
             self.character.coins += 5000
+            character_db.cache_database()
             content = "You win!\nAs a reward you get `5000` coins!"
             self.style = discord.ButtonStyle.success
             for child in view.children:
@@ -64,6 +65,7 @@ class MindMeldButton(discord.ui.Button["MindMeld"]):
             if view.game_level > 1:
                 coins = 100 * view.game_level - 1
                 self.character.coins += coins
+                character_db.cache_database()
                 content = f"Incorrect! Try again!\nYou completed `{view.game_level - 1}` levels!\nAs a reward you get `{coins}` coins!"
             else:
                 content = "Incorrect! Try again!"
@@ -184,6 +186,7 @@ class Puzzle(commands.Cog):
         if message.content.lower() == word:
             coins = random.randint(100, 200)
             character.coins += coins
+            character_db.cache_database()
 
             embed = discord.Embed(
                 title="Correct!",
@@ -245,6 +248,8 @@ class Puzzle(commands.Cog):
                 correct_words.remove(message.content.lower())
                 coins = random.randint(10, 50)
                 character.coins += coins
+                character_db.cache_database()
+
                 embed = discord.Embed(
                     title="Correct!",
                     description=f"You guessed `{correct_guess}` words correctly!\nYou have `{len(correct_words)}` words left to guess.\nAs a reward you get `{coins}` coins!",
