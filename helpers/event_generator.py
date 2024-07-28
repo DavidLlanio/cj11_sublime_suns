@@ -26,16 +26,20 @@ class EventGenerator:
         The constructor for EventGenerator
 
         Parameters:
-            data_path (os.Path): Path to data folder
+            data_path (str): Path to data folder
         """
         # Set the random seed
         random.seed(time.time())
+
+        # Get lists from data files
         self.data_path = data_path
         self.location_front = self._get_location_front_list()
         self.generic_names = self._get_generic_names()
         self.city_names = self._get_city_names()
         self.visiting_verbs = self._get_visitng_verbs()
         self.winning_verbs = self._get_winning_verbs()
+
+        # Type of events and odds
         self.event_type = ["visiting", "winning"]
         self.event_odds = [0.7, 0.3]
 
@@ -44,6 +48,8 @@ class EventGenerator:
         This method returns an event list of random events
         30% chance of being a winning event
 
+        Parameters:
+            n_items (int): Number of events to generate
         Returns:
             list events: list of events
         """
@@ -83,7 +89,7 @@ class EventGenerator:
         This method returns a list of generic names
 
         Returns:
-            list: Weapon names
+            list: Generic names
         """
         with open(os.path.join(self.data_path, "names.txt"), "r") as n:
             names = n.readlines()
@@ -96,7 +102,7 @@ class EventGenerator:
         This method returns a list of city names
 
         Returns:
-            list: Weapon names
+            list: City names
         """
         with open(os.path.join(self.data_path, "city_names.txt"), "r") as c:
             city_names = c.readlines()
@@ -109,7 +115,7 @@ class EventGenerator:
         This method returns a list of visiting verbs
 
         Returns:
-            list: Visiting words
+            list: Visiting verbs
         """
         with open(
             os.path.join(self.data_path, "visiting_actions.txt"), "r"
@@ -124,7 +130,7 @@ class EventGenerator:
         This method returns a list of winning verbs
 
         Returns:
-            list: Winning words
+            list: Winning verbs
         """
         with open(
             os.path.join(self.data_path, "winning_actions.txt"), "r"
