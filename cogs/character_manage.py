@@ -235,7 +235,7 @@ class CharacterHandle(commands.Cog):
         )
 
     @app_commands.command(
-        name="checkin", description="Get everything your character has gained"
+        name="checkin", description="Log all activities since last checkin and claim items earned"
     )
     async def checkin(self, interaction: discord.Interaction):
         user_id = interaction.user.id
