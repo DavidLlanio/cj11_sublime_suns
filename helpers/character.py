@@ -57,3 +57,40 @@ class Character:
                 > self.equipped_necklace.enumerate_rarity()
             ):
                 self.equipped_necklace = item
+
+    def get_pretty_quest_log(self):
+        return "\n".join(list(filter(None, self.quest_log)))
+
+    def get_pretty_equipment_list(self):
+        helmet = (
+            f"Helmet: {' '.join(str(self.equipped_helmet).split('\n')[:-1])} ({self.equipped_helmet.rarity})"
+            if self.equipped_helmet.rarity
+            else "Helmet: *None*"
+        )
+        armor = (
+            f"Armor: {' '.join(str(self.equipped_armor).split('\n')[:-1])} ({self.equipped_armor.rarity})"
+            if self.equipped_armor.rarity
+            else "Armor: *None*"
+        )
+
+        necklace = (
+            f"Necklace: {' '.join(str(self.equipped_necklace).split('\n')[:-1])} ({self.equipped_necklace.rarity})"
+            if self.equipped_necklace.rarity
+            else "Necklace: *None*"
+        )
+
+        boots = (
+            f"Boots: {' '.join(str(self.equipped_boots).split('\n')[:-1])} ({self.equipped_boots.rarity})"
+            if self.equipped_boots.rarity
+            else "Boots: *None*"
+        )
+
+        weapon = (
+            f"Weapon: {' '.join(str(self.equipped_weapon).split('\n')[:-1])} ({self.equipped_weapon.rarity})"
+            if self.equipped_weapon.rarity
+            else "Weapon: *None*"
+        )
+
+        formatted_string = f"{helmet}\n{armor}\n{necklace}\n{boots}\n{weapon}"
+
+        return formatted_string

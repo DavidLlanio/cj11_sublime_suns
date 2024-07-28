@@ -1,4 +1,6 @@
 import os
+import random
+import time
 from dataclasses import dataclass
 from random import choice, choices
 
@@ -48,6 +50,9 @@ class ItemGenerator:
         Parameters:
             data_path (os.Path): Path to data folder
         """
+        # Set the random seed
+        random.seed(time.time())
+
         # Item dataclass
         self.item = Item()
 
@@ -81,21 +86,25 @@ class ItemGenerator:
         ]
         self.item_types = ["Weapon", "Helmet", "Armor", "Boots", "Necklace"]
 
-    def get_item(self):
+    def get_item(self, n_items):
         """
         This method returns a random item
 
         Returns:
             Item: Randomly generated Item object
         """
-        # Roll the item type
-        self.item.type_ = self.get_item_type()
-        # Roll the item rarity
-        self.item.rarity = self.get_item_rarity()
-        # Get the item name
-        self.item.name = self.get_item_name(self.item.type_)
+        item_list = []
+        for _ in range(n_items):
+            # Roll the item type
+            self.item.type_ = self.get_item_type()
+            # Roll the item rarity
+            self.item.rarity = self.get_item_rarity()
+            # Get the item name
+            self.item.name = self.get_item_name(self.item.type_)
 
-        return self.item
+            item_list.append(self.item)
+
+        return item_list
 
     def get_item_name(self, item_t):
         """
@@ -108,19 +117,23 @@ class ItemGenerator:
         """
         if item_t == "Weapon":
             item_name = (
-                f"{choice(self.weapon_fronts)}{choice(self.item_names)}"
+                f"{choice(self.weapon_fronts)} {choice(self.item_names)}"
             )
         elif item_t == "Helmet":
             item_name = (
-                f"{choice(self.helmet_fronts)}{choice(self.item_names)}"
+                f"{choice(self.helmet_fronts)} {choice(self.item_names)}"
             )
         elif item_t == "Armor":
-            item_name = f"{choice(self.armor_fronts)}{choice(self.item_names)}"
+            item_name = (
+                f"{choice(self.armor_fronts)} {choice(self.item_names)}"
+            )
         elif item_t == "Boots":
-            item_name = f"{choice(self.boots_fronts)}{choice(self.item_names)}"
+            item_name = (
+                f"{choice(self.boots_fronts)} {choice(self.item_names)}"
+            )
         elif item_t == "Necklace":
             item_name = (
-                f"{choice(self.necklace_fronts)}{choice(self.item_names)}"
+                f"{choice(self.necklace_fronts)} {choice(self.item_names)}"
             )
 
         return item_name
@@ -154,7 +167,7 @@ class ItemGenerator:
         """
         with open(os.path.join(self.data_path, "weapon_front.txt"), "r") as wf:
             weapon_fronts = wf.readlines()
-            weapon_fronts = [x.replace("\n", "") for x in weapon_fronts]
+            weapon_fronts = [x.strip() for x in weapon_fronts]
 
         return weapon_fronts
 
@@ -167,7 +180,7 @@ class ItemGenerator:
         """
         with open(os.path.join(self.data_path, "helmet_front.txt"), "r") as hf:
             helmet_fronts = hf.readlines()
-            helmet_fronts = [x.replace("\n", "") for x in helmet_fronts]
+            helmet_fronts = [x.strip() for x in helmet_fronts]
 
         return helmet_fronts
 
@@ -180,7 +193,7 @@ class ItemGenerator:
         """
         with open(os.path.join(self.data_path, "armor_front.txt"), "r") as af:
             armor_fronts = af.readlines()
-            armor_fronts = [x.replace("\n", "") for x in armor_fronts]
+            armor_fronts = [x.strip() for x in armor_fronts]
 
         return armor_fronts
 
@@ -193,7 +206,7 @@ class ItemGenerator:
         """
         with open(os.path.join(self.data_path, "boots_front.txt"), "r") as bf:
             boots_fronts = bf.readlines()
-            boots_fronts = [x.replace("\n", "") for x in boots_fronts]
+            boots_fronts = [x.strip() for x in boots_fronts]
 
         return boots_fronts
 
@@ -208,7 +221,7 @@ class ItemGenerator:
             os.path.join(self.data_path, "necklace_front.txt"), "r"
         ) as nf:
             necklace_fronts = nf.readlines()
-            necklace_fronts = [x.replace("\n", "") for x in necklace_fronts]
+            necklace_fronts = [x.strip() for x in necklace_fronts]
 
         return necklace_fronts
 
@@ -221,6 +234,6 @@ class ItemGenerator:
         """
         with open(os.path.join(self.data_path, "names.txt"), "r") as n:
             names = n.readlines()
-            names = [x.replace("\n", "") for x in names]
+            names = [x.strip() for x in names]
 
         return names
