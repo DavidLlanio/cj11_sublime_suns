@@ -1,6 +1,5 @@
 import os
 import pickle
-from collections import defaultdict
 from datetime import datetime
 
 from helpers.character import Character
@@ -20,7 +19,7 @@ class CharacterDatabase:
             data_path (str): Path to data folder
         """
         self.db_path = os.path.join(data_path, "database.pkl")
-        self.characters: defaultdict[int:Character] = self._load_database()
+        self.characters = self._load_database()
         self.generator = Generator(data_path)
 
     def add_character(self, uid, character: Character):
