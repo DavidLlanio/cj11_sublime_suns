@@ -4,6 +4,7 @@ import time
 from dataclasses import dataclass
 from random import choice, choices
 
+
 @dataclass
 class Event:
     """Class for keeping track of event information"""
@@ -40,14 +41,14 @@ class EventGenerator:
 
     def get_event(self, n_items):
         """
-        This method returns a random event and bool if it is a winning event
+        This method returns an event list of random events
         30% chance of being a winning event
 
         Returns:
-            str event: Event name
+            list events: list of events
         """
         events = []
-        
+
         for _ in range(n_items):
             outcome = choices(self.event_type, self.event_odds)
             event = Event()
@@ -57,7 +58,7 @@ class EventGenerator:
             elif outcome[0] == "winning":
                 event.name = f"{choice(self.winning_verbs)} {choice(self.location_front)} {choice(self.generic_names)}"
                 event.coins = True
-                
+
             events.append(event)
 
         return events

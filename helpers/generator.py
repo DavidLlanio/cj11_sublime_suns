@@ -24,9 +24,6 @@ class Generator:
         self.item_generator = ItemGenerator(data_path=datapath)
         self.event_generator = EventGenerator(data_path=datapath)
 
-        # Crete buffer item
-        self.buffer_item = BufferItem()
-
     def generate_buffer_item(self, n_items: int) -> BufferItem:
         """
         This method generates n_items of events, creates items based
@@ -38,6 +35,7 @@ class Generator:
         Returns:
             BufferItem: buffer item with events and items
         """
+        buffer_item = BufferItem()
         win_count: int = 0
 
         # Generate events
@@ -49,14 +47,14 @@ class Generator:
 
         event_names = [event.name for event in event_list]
 
-        self.buffer_item.events.extend(event_names)
+        buffer_item.events.extend(event_names)
 
         # For each winning event generate an item
         item_list = self.item_generator.get_item(win_count)
 
-        self.buffer_item.items.extend(item_list)
+        buffer_item.items.extend(item_list)
 
-        return self.buffer_item
+        return buffer_item
 
     def generate_items(self, n_items: int) -> list[Item]:
         """
