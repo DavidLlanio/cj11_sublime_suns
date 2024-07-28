@@ -2,7 +2,7 @@ import os
 import random
 import time
 from dataclasses import dataclass
-from random import choice
+from random import choice, choices
 
 
 @dataclass
@@ -36,20 +36,21 @@ class EventGenerator:
         self.city_names = self._get_city_names()
         self.visiting_verbs = self._get_visitng_verbs()
         self.winning_verbs = self._get_winning_verbs()
+        self.event_type = ["visiting", "winning"]
+        self.event_odds = [0.7, 0.3]
 
     def get_event(self, n_items):
         """
-        This method returns a random event and bool if it is a winning event
+        This method returns an event list of random events
         30% chance of being a winning event
 
         Returns:
-            str event: Event name
+            list events: list of events
         """
-        event_type = ["visiting", "winning"]
         events = []
 
         for _ in range(n_items):
-            outcome = choice(event_type)
+            outcome = choices(self.event_type, self.event_odds)
             event = Event()
 
             if outcome[0] == "visiting":
