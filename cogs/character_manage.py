@@ -230,11 +230,10 @@ class CharacterHandle(commands.Cog):
                 "You do not have a character created. Use `/create` to create one.",
                 ephemeral=True,
             )
-            return
-
-        await interaction.response.send_message(
-            f"Your balance is `{character.coins}` coins."
-        )
+        else:
+            await interaction.response.send_message(
+                f"Your balance is `{character.coins}` coins."
+            )
 
     @app_commands.command(
         name="checkin", description="Get everything your character has gained"

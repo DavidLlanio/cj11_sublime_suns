@@ -1,20 +1,24 @@
+import asyncio
 import copy
 import datetime
-import json
 import random
 
 import discord
 from discord import app_commands
 from discord.ext import commands
-import asyncio
 
-from helpers.puzzle import ANAGRAMS, ANAGRAMS_DATA, jumble, MIND_MELD
+from helpers.character import Character
+from helpers.puzzle import ANAGRAMS, ANAGRAMS_DATA, MIND_MELD, jumble
+
+from .character_manage import character_db
 
 COLOR = 0x00FF00
 
 
 class MindMeldButton(discord.ui.Button["MindMeld"]):
-    def __init__(self, x: int, y: int, label: str, disabled: bool) -> None:
+    def __init__(
+        self, x: int, y: int, label: str, disabled: bool, character: Character
+    ) -> None:
         super().__init__(
             style=discord.ButtonStyle.secondary,
             label=label if disabled else "\u200b",
@@ -23,6 +27,7 @@ class MindMeldButton(discord.ui.Button["MindMeld"]):
         )
         self.x = x
         self.y = y
+        self.character = character
         if self.view is not None:
             self.winning_words = self.view.get_winning_words()
 
@@ -48,13 +53,20 @@ class MindMeldButton(discord.ui.Button["MindMeld"]):
             content = f"Correct! You have reached level `{view.game_level}`!\nFind `{' '.join(view.winning_words)}`"
 
         elif result == "win":
-            content = "You win!"
+            self.character.coins += 5000
+            content = "You win!\nAs a reward you get `5000` coins!"
             self.style = discord.ButtonStyle.success
             for child in view.children:
                 child.disabled = True
+
             view.stop()
         else:
-            content = "Incorrect! Try again!"
+            if view.game_level > 1:
+                coins = 100 * view.game_level - 1
+                self.character.coins += coins
+                content = f"Incorrect! Try again!\nYou completed `{view.game_level - 1}` levels!\nAs a reward you get `{coins}` coins!"
+            else:
+                content = "Incorrect! Try again!"
             self.style = discord.ButtonStyle.danger
             self.label = selected_btn_value
             for child in view.children:
@@ -77,12 +89,14 @@ class MindMeld(discord.ui.View):
         disabled: bool,
         words: list[str],
         winning_words: list[str],
+        character: Character,
     ) -> None:
         super().__init__()
         self.level = level
         self.disabled = disabled
         self.words = words
         self.winning_words = winning_words
+        self.character = character
 
         temp = copy.deepcopy(self.words)
         self.board = [
@@ -94,7 +108,9 @@ class MindMeld(discord.ui.View):
         for i in range(level):
             for j in range(level):
                 self.add_item(
-                    MindMeldButton(i, j, self.board[j][i], self.disabled)
+                    MindMeldButton(
+                        i, j, self.board[j][i], self.disabled, self.character
+                    )
                 )
 
     def check_btn_values(self, selected_btn_value: str) -> str:
@@ -132,6 +148,15 @@ class Puzzle(commands.Cog):
         description="Need for some coins? Come play this minigame",
     )
     async def jumble_jigger(self, interaction: discord.Interaction) -> None:
+        character = character_db.get_character_info(interaction.user.id)
+
+        if character == -1:
+            await interaction.response.send_message(
+                "You do not have a character created. Use `/create` to create one.",
+                ephemeral=True,
+            )
+            return
+
         word, jumbled_word = jumble()
         embed = discord.Embed(
             title="Jumble Jigger!",
@@ -157,20 +182,8 @@ class Puzzle(commands.Cog):
             return
 
         if message.content.lower() == word:
-            coins = random.randint(1, 100)
-            try:
-                with open("./data/coins.json", "r+") as f:
-                    data = json.load(f)
-                    data[str(interaction.user.id)] = (
-                        data.get(str(interaction.user.id), 0) + coins
-                    )
-                    f.seek(0)
-                    json.dump(data, f, indent=4)
-            except Exception:
-                await interaction.followup.send(
-                    "An error occurred while giving you coins. Please send a screenshot of this message to the developer to get your coins."
-                )
-                return
+            coins = random.randint(100, 200)
+            character.coins += coins
 
             embed = discord.Embed(
                 title="Correct!",
@@ -193,6 +206,15 @@ class Puzzle(commands.Cog):
     async def anagram_adventure(
         self, interaction: discord.Interaction
     ) -> None:
+        character = character_db.get_character_info(interaction.user.id)
+
+        if character == -1:
+            await interaction.response.send_message(
+                "You do not have a character created. Use `/create` to create one.",
+                ephemeral=True,
+            )
+            return
+
         word = random.choice(ANAGRAMS)
         correct_words = copy.deepcopy(ANAGRAMS_DATA[word])
 
@@ -221,9 +243,11 @@ class Puzzle(commands.Cog):
             if message.content.lower() in correct_words:
                 correct_guess += 1
                 correct_words.remove(message.content.lower())
+                coins = random.randint(10, 50)
+                character.coins += coins
                 embed = discord.Embed(
                     title="Correct!",
-                    description=f"You guessed `{correct_guess}` words correctly!\nYou have `{len(correct_words)}` words left to guess.",
+                    description=f"You guessed `{correct_guess}` words correctly!\nYou have `{len(correct_words)}` words left to guess.\nAs a reward you get `{coins}` coins!",
                     color=COLOR,
                 )
                 await interaction.followup.send(embed=embed)
@@ -271,6 +295,15 @@ class Puzzle(commands.Cog):
     async def mind_meld(
         self, interaction: discord.Interaction, level: int, start_time: int
     ) -> None:
+        character = character_db.get_character_info(interaction.user.id)
+
+        if character == -1:
+            await interaction.response.send_message(
+                "You do not have a character created. Use `/create` to create one.",
+                ephemeral=True,
+            )
+            return
+
         temp = copy.deepcopy(MIND_MELD)
         words = [
             temp.pop(random.randint(0, len(temp) - 1)) for _ in range(level**2)
@@ -282,6 +315,7 @@ class Puzzle(commands.Cog):
             disabled=True,
             words=words,
             winning_words=winning_words,
+            character=character,
         )
         embed = discord.Embed(
             title="Mind Meld!",
@@ -298,6 +332,7 @@ class Puzzle(commands.Cog):
             disabled=False,
             words=words,
             winning_words=winning_words,
+            character=character,
         )
 
         embed = discord.Embed(
