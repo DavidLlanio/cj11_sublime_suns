@@ -56,3 +56,10 @@ class Character:
                 > self.equipped_necklace.enumerate_rarity()
             ):
                 self.equipped_necklace = item
+
+    def get_pretty_quest_log(self):
+        return "\n".join(self.quest_log)
+
+    def get_pretty_equipment_list(self):
+        formatted_string = f"Helmet = {self.equipped_helmet}({self.equipped_helmet.rarity})\nArmor = {self.equipped_armor.name}({self.equipped_armor.rarity})\nNecklace = {self.equipped_necklace.name}({self.equipped_necklace.rarity})\nBoots = {self.equipped_boots.name}({self.equipped_boots.rarity})\nWeapon = {self.equipped_weapon.name}({self.equipped_weapon.rarity})\n"
+        return formatted_string
