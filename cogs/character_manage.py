@@ -1,5 +1,4 @@
 import os
-import time
 from pathlib import Path
 
 import discord
@@ -217,9 +216,11 @@ class CharacterHandle(commands.Cog):
                 description=f"Quest Log:\n{formatted_quest_log}\n\n \
                     Sex: {sex}\nRace: {race}\nClass: {class_}\n\n \
                     Equipment:\n{formatted_equipment_list}",
-                color=0x00FF00
+                color=0x00FF00,
             )
-            await interaction.response.send_message(embed=embed, delete_after=60)
+            await interaction.response.send_message(
+                embed=embed, delete_after=60
+            )
         else:
             await interaction.response.send_message(
                 "You do not have a character created.", ephemeral=True
@@ -235,12 +236,13 @@ class CharacterHandle(commands.Cog):
         )
 
     @app_commands.command(
-        name="checkin", description="Log all activities since last checkin and claim items earned"
+        name="checkin",
+        description="Log all activities since last checkin and claim items earned",
     )
     async def checkin(self, interaction: discord.Interaction):
         user_id = interaction.user.id
         check = character_db.character_checkin(user_id)
-        
+
         if check < 0:
             await interaction.response.send_message(
                 "You do not have a character created.", ephemeral=True
@@ -260,7 +262,7 @@ class CharacterHandle(commands.Cog):
             for place, character in enumerate(top20)
         ]
         if top20:
-            await interaction.response.send_message(f"\n".join(top20))
+            await interaction.response.send_message("\n".join(top20))
         else:
             await interaction.response.send_message(
                 "You have checked in your character, use /view to see changes"
