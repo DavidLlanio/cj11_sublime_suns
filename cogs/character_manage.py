@@ -7,6 +7,7 @@ from discord.ext import commands
 
 from helpers.character import Character
 from helpers.character_database import CharacterDatabase
+from helpers.generator import ItemGenerator
 
 # Get the data folder path
 repo_path = Path(__file__).parent.parent
@@ -14,6 +15,7 @@ data_fp = os.path.join(repo_path, "data")
 
 # Initialize Database
 character_db = CharacterDatabase(data_path=data_fp)
+item_generator = ItemGenerator(data_fp)
 
 
 class Dropdown(discord.ui.Select):
@@ -250,6 +252,36 @@ class CharacterHandle(commands.Cog):
             await interaction.response.send_message(
                 "You have checked in your character, use /view to see changes"
             )
+
+    @app_commands.command(
+        name="gacha", description="Roll the gacha to get a random item"
+    )
+    async def gacha(self, interaction: discord.Interaction):
+        user_id = interaction.user.id
+        character = character_db.get_character_info(user_id)
+
+        if character == -1:
+            await interaction.response.send_message(
+                "You do not have a character created. Use `/create` to create one.",
+                ephemeral=True,
+            )
+            return
+
+        if character.coins < 500:
+            await interaction.response.send_message(
+                "You do not have enough coins to roll the gacha. You need at least `500` coins.",
+                ephemeral=True,
+            )
+            return
+
+        generated_item = item_generator.get_item()
+        character.inventory.append(generated_item)
+        character.coins -= 500
+        character_db.cache_database()
+
+        await interaction.response.send_message(
+            f"You have rolled the gacha and received a `{generated_item.name}`."
+        )
 
 
 async def setup(bot: commands.Bot) -> None:
