@@ -1,7 +1,8 @@
 import os
+import random
+import time
 from dataclasses import dataclass
 from random import choice, choices
-
 
 @dataclass
 class Event:
@@ -26,34 +27,39 @@ class EventGenerator:
         Parameters:
             data_path (os.Path): Path to data folder
         """
+        # Set the random seed
+        random.seed(time.time())
         self.data_path = data_path
-        self.event = Event()
         self.location_front = self._get_location_front_list()
         self.generic_names = self._get_generic_names()
         self.city_names = self._get_city_names()
         self.visiting_verbs = self._get_visitng_verbs()
         self.winning_verbs = self._get_winning_verbs()
 
-    def get_event(self):
+    def get_event(self, n_items):
         """
         This method returns a random event and bool if it is a winning event
         30% chance of being a winning event
 
         Returns:
             str event: Event name
-            bool coins: True if winning event, False if not winning event
         """
         event_type = ["visiting", "winning"]
-        event_odds = [0.7, 0.3]
-        event_type = choices(event_type, event_odds)
+        events = []
+        
+        for _ in range(n_items):
+            outcome = choice(event_type)
+            event = Event()
 
-        if event_type[0] == "visiting":
-            self.event.name = f"{choice(self.visiting_verbs)} the city of {choice(self.city_names)}"
-        elif event_type[0] == "winning":
-            self.event.name = f"{choice(self.winning_verbs)}{choice(self.location_front)}{choice(self.generic_names)}"
-            self.event.coins = True
+            if outcome[0] == "visiting":
+                event.name = f"{choice(self.visiting_verbs)} the city of {choice(self.city_names)}"
+            elif outcome[0] == "winning":
+                event.name = f"{choice(self.winning_verbs)} {choice(self.location_front)} {choice(self.generic_names)}"
+                event.coins = True
+                
+            events.append(event)
 
-        return self.event
+        return events
 
     def _get_location_front_list(self):
         """

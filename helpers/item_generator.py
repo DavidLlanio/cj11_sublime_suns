@@ -1,7 +1,8 @@
 import os
+import random
+import time
 from dataclasses import dataclass
 from random import choice, choices
-
 
 @dataclass
 class Item:
@@ -48,6 +49,9 @@ class ItemGenerator:
         Parameters:
             data_path (os.Path): Path to data folder
         """
+        # Set the random seed
+        random.seed(time.time())
+        
         # Item dataclass
         self.item = Item()
 
@@ -81,21 +85,25 @@ class ItemGenerator:
         ]
         self.item_types = ["Weapon", "Helmet", "Armor", "Boots", "Necklace"]
 
-    def get_item(self):
+    def get_item(self, n_items):
         """
         This method returns a random item
 
         Returns:
             Item: Randomly generated Item object
         """
-        # Roll the item type
-        self.item.type_ = self.get_item_type()
-        # Roll the item rarity
-        self.item.rarity = self.get_item_rarity()
-        # Get the item name
-        self.item.name = self.get_item_name(self.item.type_)
+        item_list = []
+        for _ in range(n_items):
+            # Roll the item type
+            self.item.type_ = self.get_item_type()
+            # Roll the item rarity
+            self.item.rarity = self.get_item_rarity()
+            # Get the item name
+            self.item.name = self.get_item_name(self.item.type_)
 
-        return self.item
+            item_list.append(self.item)
+
+        return item_list
 
     def get_item_name(self, item_t):
         """

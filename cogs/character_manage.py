@@ -1,4 +1,5 @@
 import os
+import time
 from pathlib import Path
 
 import discord
@@ -202,6 +203,8 @@ class CharacterHandle(commands.Cog):
         user_id = interaction.user.id
 
         character = character_db.get_character_info(user_id)
+        formatted_quest_log = character.get_pretty_quest_log()
+        formatted_equipment_list = character.get_pretty_equipment_list()
 
         if character != -1:
             sex, race, class_ = (
@@ -210,11 +213,13 @@ class CharacterHandle(commands.Cog):
                 character.class_,
             )
             embed = discord.Embed(
-                title="Your Character",
-                description=f"Sex: {sex}\nRace: {race}\nClass: {class_}",
-                color=0x00FF00,
+                title="Character Info",
+                description=f"Quest Log:\n{formatted_quest_log}\n\n \
+                    Sex: {sex}\nRace: {race}\nClass: {class_}\n\n \
+                    Equipment:\n{formatted_equipment_list}",
+                color=0x00FF00
             )
-            await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed, delete_after=60)
         else:
             await interaction.response.send_message(
                 "You do not have a character created.", ephemeral=True
@@ -235,7 +240,7 @@ class CharacterHandle(commands.Cog):
     async def checkin(self, interaction: discord.Interaction):
         user_id = interaction.user.id
         check = character_db.character_checkin(user_id)
-
+        
         if check < 0:
             await interaction.response.send_message(
                 "You do not have a character created.", ephemeral=True
