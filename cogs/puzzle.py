@@ -254,6 +254,9 @@ class Puzzle(commands.Cog):
                 character.coins += coins
                 character_db.cache_database()
 
+                if correct_words == []:
+                    break
+
                 embed = discord.Embed(
                     title="Correct!",
                     description=f"You guessed `{correct_guess}` words correctly!\nYou have `{len(correct_words)}` words left to guess.\nAs a reward you get `{coins}` coins!",
@@ -271,6 +274,17 @@ class Puzzle(commands.Cog):
                     color=COLOR,
                 )
                 await interaction.followup.send(embed=embed)
+
+        if correct_words == []:
+            character.coins += 500
+            character_db.cache_database()
+            embed = discord.Embed(
+                title="Congratulations!",
+                description="You have guessed all the words correctly!\nAs a reward you get extra `500` coins!",
+                color=COLOR,
+            )
+            await interaction.followup.send(embed=embed)
+            return
 
         embed = discord.Embed(
             title="Time's up!",

@@ -81,9 +81,7 @@ class CharacterDatabase:
             list: Sorted list of characters
         """
         leaderboard = sorted(
-            self.characters.values(),
-            key=lambda char: char.ranking_points,
-            reverse=True,
+            self.characters.values(), key=lambda char: char.coins, reverse=True
         )
         return leaderboard[:20]
 

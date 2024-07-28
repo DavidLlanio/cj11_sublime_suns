@@ -317,7 +317,7 @@ class CharacterHandle(commands.Cog):
     async def leaderboard(self, interaction: discord.Interaction):
         top20 = character_db.get_character_leaderboard()
         top20 = [
-            f"{place}. {character.name}"
+            f"`{place}. {character.name} ({character.coins} coins)`"
             for place, character in enumerate(top20)
         ]
         if top20:
