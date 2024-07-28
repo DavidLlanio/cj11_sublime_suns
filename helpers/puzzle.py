@@ -4,6 +4,12 @@ import random
 WORDS: list[str] = []
 ANAGRAMS: list[str] = []
 ANAGRAMS_DATA: dict[str, list[str]] = {}
+MIND_MELD: list[str] = []
+
+
+with open("./data/names.txt") as file:
+    MIND_MELD = [line.split()[0].strip() for line in file.readlines()]
+
 
 with open("./data/anagrams_adventure.json") as file:
     data = json.load(file)
@@ -13,6 +19,7 @@ with open("./data/anagrams_adventure.json") as file:
 
 with open("./data/jumble_words.txt") as file:
     WORDS = [line.strip() for line in file.readlines()]
+    MIND_MELD.extend(WORDS)
 
 
 def jumble_word(word: list[str]) -> str:

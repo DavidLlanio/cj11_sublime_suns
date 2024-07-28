@@ -32,3 +32,4 @@ build/
 
 # DB
 sublime_suns.db
+database.pkl
