@@ -194,8 +194,8 @@ class CharacterHandle(commands.Cog):
     async def create(self, interaction: discord.Interaction) -> None:
         """Slash command to create a character."""
         user_id: int = interaction.user.id
-
         char_info = character_db.get_character_info(user_id)
+
         if char_info != -1:
             await interaction.response.send_message(
                 "You already have a character created.", ephemeral=True
@@ -215,8 +215,20 @@ class CharacterHandle(commands.Cog):
     async def view(self, interaction: discord.Interaction) -> None:
         """Slash command to view your character."""
         user_id: int = interaction.user.id
-
         character = character_db.get_character_info(user_id)
+
+        if character == -1:
+            await interaction.response.send_message(
+                "You do not have a character created.", ephemeral=True
+            )
+            return
+
+        formatted_quest_log = character.get_pretty_quest_log()
+        formatted_equipment_list = character.get_pretty_equipment_list()
+
+        formatted_quest_log = (
+            formatted_quest_log if formatted_quest_log else "No quests yet"
+        )
 
         if character != -1:
             sex, race, class_ = (
@@ -224,9 +236,9 @@ class CharacterHandle(commands.Cog):
                 character.race,
                 character.class_,
             )
-            embed: discord.Embed = discord.Embed(
-                title="Your Character",
-                description=f"Sex: {sex}\nRace: {race}\nClass: {class_}",
+            embed = discord.Embed(
+                title="Character Info",
+                description=f"**Quest Log:**\n{formatted_quest_log}\n\n**Sex:** {sex}\n**Race:** {race}\n**Class:** {class_}\n\n**Equipment:**\n{formatted_equipment_list}",
                 color=0x00FF00,
             )
             await interaction.response.send_message(embed=embed)
@@ -265,7 +277,7 @@ class CharacterHandle(commands.Cog):
             )
         else:
             await interaction.response.send_message(
-                "You have checked in your character, use /view to see changes"
+                "You have checked in your character, use `/view` to see changes"
             )
 
     @app_commands.command(
@@ -289,7 +301,7 @@ class CharacterHandle(commands.Cog):
             )
             return
 
-        generated_item = item_generator.get_item()
+        generated_item = item_generator.get_item(1)[0]
         character.inventory.append(generated_item)
         character.coins -= 500
         character_db.cache_database()
@@ -297,6 +309,22 @@ class CharacterHandle(commands.Cog):
         await interaction.response.send_message(
             f"You have rolled the gacha and received a `{generated_item.name}`."
         )
+
+    @app_commands.command(
+        name="leaderboard", description="Show ranking points leaderboard"
+    )
+    async def leaderboard(self, interaction: discord.Interaction):
+        top20 = character_db.get_character_leaderboard()
+        top20 = [
+            f"{place}. {character.name}"
+            for place, character in enumerate(top20)
+        ]
+        if top20:
+            await interaction.response.send_message("\n".join(top20))
+        else:
+            await interaction.response.send_message(
+                "You have checked in your character, use `/view` to see changes"
+            )
 
 
 async def setup(bot: commands.Bot) -> None:
