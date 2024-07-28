@@ -16,6 +16,8 @@ COLOR = 0x00FF00
 
 
 class MindMeldButton(discord.ui.Button["MindMeld"]):
+    """A button that represents a cell in the Mind Meld game."""
+
     def __init__(
         self, x: int, y: int, label: str, disabled: bool, character: Character
     ) -> None:
@@ -82,6 +84,8 @@ class MindMeldButton(discord.ui.Button["MindMeld"]):
 
 
 class MindMeld(discord.ui.View):
+    """The main view for the Mind Meld game."""
+
     children: list[MindMeldButton]
     words: list[str]
 
