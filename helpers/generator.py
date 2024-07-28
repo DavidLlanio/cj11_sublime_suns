@@ -3,6 +3,8 @@ from .item_generator import Item, ItemGenerator
 
 
 class BufferItem:
+    """Class for keeping track of events and items added to buffer"""
+
     def __init__(self):
         self.events: list[Event] = []
         self.items: list[Item] = []
@@ -28,7 +30,7 @@ class Generator:
         """
         This method generates n_items of events, creates items based
         on winning events, then returns a dict with events and
-        items generated, and also how much exp.
+        items generated
 
         Parameters:
             n_items (int): Number of events to generate
@@ -41,12 +43,13 @@ class Generator:
         # Generate events
         event_list = self.event_generator.get_event(n_items)
 
+        # Count number of wins
         for event in event_list:
             if event.coins:
                 win_count += 1
 
+        # Get event names and add to buffer item
         event_names = [event.name for event in event_list]
-
         buffer_item.events.extend(event_names)
 
         # For each winning event generate an item
