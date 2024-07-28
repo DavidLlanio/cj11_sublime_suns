@@ -17,6 +17,12 @@ class Item:
         return f"{self.name}\n{self.type_}\n{self.rarity}"
 
     def enumerate_rarity(self):
+        """
+        Function that enumerates item rarity
+
+        Returns:
+            int value: Enumerated item rarity
+        """
         value = 0
         if self.rarity == "Common":
             value = 1
@@ -88,10 +94,12 @@ class ItemGenerator:
 
     def get_item(self, n_items):
         """
-        This method returns a random item
+        This method n_items number of random items
 
+        Parameters:
+            n_items (int): Number of items to generate
         Returns:
-            Item: Randomly generated Item object
+            list[Item] item_list: list of randomly generated items
         """
         item_list = []
         for _ in range(n_items):
@@ -111,7 +119,7 @@ class ItemGenerator:
         This method returns a random item name given the item type
 
         Parameters:
-            item_t: str Item type
+            item_t (str): Item type
         Returns:
             str: Item name
         """
