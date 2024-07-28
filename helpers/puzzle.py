@@ -6,7 +6,6 @@ ANAGRAMS: list[str] = []
 ANAGRAMS_DATA: dict[str, list[str]] = {}
 MIND_MELD: list[str] = []
 
-print(MIND_MELD)
 
 with open("./data/names.txt") as file:
     MIND_MELD = [line.split()[0].strip() for line in file.readlines()]
