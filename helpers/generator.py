@@ -47,9 +47,9 @@ class Generator:
             if event.coins:
                 win_count += 1
 
-        event_list = [event.name for event in event_list]
+        event_names = [event.name for event in event_list]
 
-        self.buffer_item.events.extend(event_list)
+        self.buffer_item.events.extend(event_names)
 
         # For each winning event generate an item
         item_list = self.item_generator.get_item(win_count)
