@@ -24,7 +24,10 @@ class Character:
         self.ranking_points: int = 0
         self.last_checkin = datetime.now()
 
-    def equip_best(self):
+    def equip_best(self) -> None:
+        """
+        Equips the best item of each type in the inventory
+        """
         for item in self.inventory:
             item_t = item.type_
             if (
@@ -58,10 +61,18 @@ class Character:
             ):
                 self.equipped_necklace = item
 
-    def get_pretty_quest_log(self):
+    def get_pretty_quest_log(self) -> str:
+        """
+        Returns:
+            str: A formatted string of the character's quest log
+        """
         return "\n".join(list(filter(None, self.quest_log)))
 
-    def get_pretty_equipment_list(self):
+    def get_pretty_equipment_list(self) -> str:
+        """
+        Returns:
+            str: A formatted string of the character's equipment list
+        """
         helmet = (
             f"Helmet: {' '.join(str(self.equipped_helmet).split('\n')[:-1])} ({self.equipped_helmet.rarity})"
             if self.equipped_helmet.rarity

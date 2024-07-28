@@ -7,8 +7,10 @@ class Admin(commands.Cog):
         self.bot = bot
 
     @command(name="sync", aliases=["Sync"])
-    async def sync(self, ctx: Context):
+    async def sync(self, ctx: Context) -> None:
         """Globally syncs slash commands"""
+
+        # Replace the hardcoded user IDs with your own to get Admin access
         if (
             ctx.author.id == 293926911875219456
             or ctx.author.id == 1071489894704226375
