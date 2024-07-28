@@ -9,15 +9,16 @@ from helpers.character import Character
 from helpers.character_database import CharacterDatabase
 
 # Get the data folder path
-repo_path = Path(__file__).parent.parent
-data_fp = os.path.join(repo_path, "data")
+repo_path: Path = Path(__file__).parent.parent
+data_fp: str = os.path.join(repo_path, "data")
 
 # Initialize Database
-character_db = CharacterDatabase(data_path=data_fp)
+character_db: CharacterDatabase = CharacterDatabase(data_path=data_fp)
 
 
 class Dropdown(discord.ui.Select):
-    def __init__(self, placeholder, options, custom_id):
+    def __init__(self, placeholder: str, options: list[discord.SelectOption], custom_id: str) -> None:
+        """Dropdown selection for character attributes."""
         super().__init__(
             placeholder=placeholder,
             min_values=1,
@@ -26,14 +27,16 @@ class Dropdown(discord.ui.Select):
             custom_id=custom_id,
         )
 
-    async def callback(self, interaction: discord.Interaction):
+    async def callback(self, interaction: discord.Interaction) -> None:
+        """Handle dropdown selection."""
         await interaction.response.defer()
 
 
 class DropdownView(discord.ui.View):
-    def __init__(self):
+    def __init__(self) -> None:
+        """View containing dropdowns for sex, race, and class selection."""
         super().__init__()
-        sex_options = [
+        sex_options: list[discord.SelectOption] = [
             discord.SelectOption(
                 label="Male", description="Start your life as a male."
             ),
@@ -44,7 +47,7 @@ class DropdownView(discord.ui.View):
                 label="Other", description="Start your life as another gender."
             ),
         ]
-        race_options = [
+        race_options: list[discord.SelectOption] = [
             discord.SelectOption(
                 label="Human",
                 description="Adaptable and ambitious, thriving in diverse cultures.",
@@ -78,7 +81,7 @@ class DropdownView(discord.ui.View):
                 description="Versatile and charismatic, blending human ambition with elven grace.",
             ),
         ]
-        class_options = [
+        class_options: list[discord.SelectOption] = [
             discord.SelectOption(
                 label="Warrior",
                 description="A Warrior is strong and resilient, skilled in melee combat and battlefield tactics.",
@@ -116,15 +119,17 @@ class DropdownView(discord.ui.View):
 
 
 class SubmitButton(discord.ui.Button):
-    def __init__(self):
+    def __init__(self) -> None:
+        """Submit button to finalize character creation."""
         super().__init__(
             label="Submit", style=discord.ButtonStyle.green, custom_id="submit"
         )
 
-    async def callback(self, interaction: discord.Interaction):
-        sex = None
-        race = None
-        clss = None
+    async def callback(self, interaction: discord.Interaction) -> None:
+        """Handle submit button click."""
+        sex: str | None = None
+        race: str | None = None
+        clss: str | None = None
 
         for child in self.view.children:  # type: ignore
             if isinstance(child, Dropdown):
@@ -136,7 +141,7 @@ class SubmitButton(discord.ui.Button):
                     clss = child.values[0] if child.values else None
 
         if sex and race and clss:
-            user_id = interaction.user.id
+            user_id: int = interaction.user.id
 
             char_info = character_db.get_character_info(user_id)
             if char_info != -1:
@@ -144,13 +149,13 @@ class SubmitButton(discord.ui.Button):
                     "You already have a character created.", ephemeral=True
                 )
             else:
-                new_character = Character()
+                new_character: Character = Character()
                 new_character.name = interaction.user.name
                 new_character.sex = sex
                 new_character.class_ = clss
                 new_character.race = race
 
-                res = character_db.add_character(user_id, new_character)
+                res: int = character_db.add_character(user_id, new_character)
 
                 if res < 0:
                     await interaction.response.send_message(
@@ -172,14 +177,16 @@ class SubmitButton(discord.ui.Button):
 
 class CharacterHandle(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
+        """Cog for handling character-related commands."""
         self.bot = bot
 
     @app_commands.command(
         name="create",
         description="Welcome to the world, first you need to create your character. This is the command to do so.",
     )
-    async def create(self, interaction: discord.Interaction):
-        user_id = interaction.user.id
+    async def create(self, interaction: discord.Interaction) -> None:
+        """Slash command to create a character."""
+        user_id: int = interaction.user.id
 
         char_info = character_db.get_character_info(user_id)
         if char_info != -1:
@@ -187,8 +194,8 @@ class CharacterHandle(commands.Cog):
                 "You already have a character created.", ephemeral=True
             )
         else:
-            view = DropdownView()
-            embed = discord.Embed(
+            view: DropdownView = DropdownView()
+            embed: discord.Embed = discord.Embed(
                 title="Character Selection",
                 description="To begin creating your character, fill in the following dropdowns. Choose wisely!\n**This message will be deleted in 2 minutes.**",
                 color=0x00FF00,
@@ -198,8 +205,9 @@ class CharacterHandle(commands.Cog):
             )
 
     @app_commands.command(name="view", description="View your character.")
-    async def view(self, interaction: discord.Interaction):
-        user_id = interaction.user.id
+    async def view(self, interaction: discord.Interaction) -> None:
+        """Slash command to view your character."""
+        user_id: int = interaction.user.id
 
         character = character_db.get_character_info(user_id)
 
@@ -209,7 +217,7 @@ class CharacterHandle(commands.Cog):
                 character.race,
                 character.class_,
             )
-            embed = discord.Embed(
+            embed: discord.Embed = discord.Embed(
                 title="Your Character",
                 description=f"Sex: {sex}\nRace: {race}\nClass: {class_}",
                 color=0x00FF00,
@@ -221,8 +229,9 @@ class CharacterHandle(commands.Cog):
             )
 
     @app_commands.command(name="balance", description="Check your balance.")
-    async def balance(self, interaction: discord.Interaction):
-        user_id = interaction.user.id
+    async def balance(self, interaction: discord.Interaction) -> None:
+        """Slash command to check your balance."""
+        user_id: int = interaction.user.id
         character = character_db.get_character_info(user_id)
 
         if character == -1:
@@ -238,9 +247,10 @@ class CharacterHandle(commands.Cog):
     @app_commands.command(
         name="checkin", description="Get everything your character has gained"
     )
-    async def checkin(self, interaction: discord.Interaction):
-        user_id = interaction.user.id
-        check = character_db.character_checkin(user_id)
+    async def checkin(self, interaction: discord.Interaction) -> None:
+        """Slash command to check in your character."""
+        user_id: int = interaction.user.id
+        check: int = character_db.character_checkin(user_id)
 
         if check < 0:
             await interaction.response.send_message(
@@ -253,4 +263,5 @@ class CharacterHandle(commands.Cog):
 
 
 async def setup(bot: commands.Bot) -> None:
+    """Setup function to add the CharacterHandle cog to the bot."""
     await bot.add_cog(CharacterHandle(bot))
